@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package version="801">
+	<kit name="h3d_linesketcher_tools" restart="YES">
+		<source target="h3d_linesketcher_tools/index.cfg">index.cfg</source>
+		<source target="h3d_linesketcher_tools/scripts/1-bake2lowpoly v11.1.py">scripts/1-bake2lowpoly v11.1.py</source>
+		<source target="h3d_linesketcher_tools/scripts/2-lowpoly2gltf v07.py">scripts/2-lowpoly2gltf v07.py</source>
+		<source target="h3d_linesketcher_tools/scripts/3-mergeAO_BC v04.py">scripts/3-mergeAO_BC v04.py</source>
+		<source target="h3d_linesketcher_tools/scripts/4-replicators freeze v01.py">scripts/4-replicators freeze v01.py</source>
+		<source target="h3d_linesketcher_tools/scripts/5-cleanup v01.py">scripts/5-cleanup v01.py</source>
+		<source target="h3d_linesketcher_tools/scripts/full convert v2.1.py">scripts/full convert v2.1.py</source>
+		<source target="h3d_linesketcher_tools/scripts/morph name by mesh name.py">scripts/morph name by mesh name.py</source>
+		<source target="h3d_linesketcher_tools/scripts/morph_init.py">scripts/morph_init.py</source>
+		<source target="h3d_linesketcher_tools/scripts/select mask children plus texture locators.py">scripts/select mask children plus texture locators.py</source>
+		<source target="h3d_linesketcher_tools/scripts/uv name by mesh name.py">scripts/uv name by mesh name.py</source>
+	</kit>
+	<message button="Help">h3d_linesketcher_tools Kit installation complete.</message>
+</package>
