@@ -521,8 +521,8 @@ def setup_metal_material():
                     scene.deselect()
 
 
-print ''
-print 'starting...'
+print('')
+print('starting...')
 
 
 bake_selected = lx.eval('user.value {%s} ?' % userValSelectedName) is not 0
