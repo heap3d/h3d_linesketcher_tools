@@ -48,5 +48,5 @@ if cleanup_enabled:
 name_inc = '{}{}'.format(name_inc, freezed_id)
 lx.eval('scene.saveAs "{}\\{}{}" $LXOB false'.format(dirname, name_inc, ext))
 
-# TODO export as .glb
+# export as .glb
 lx.eval('scene.saveAs "{}\\{}{}" gltf.bin true'.format(dirname, name_inc, '.glb'))

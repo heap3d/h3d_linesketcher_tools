@@ -54,7 +54,8 @@ userValImgSizeDialogname = "set image resolution for baking textures"
 
 bake_lowpoly = True
 bakeDistance = '0.015'
-imgSize = 256   # variable declaration
+# variable declaration
+imgSize = 256
 lpTag = 'lowpoly'
 hpTag = 'highpoly'
 baseColor_Name = 'baseColor_'
@@ -70,7 +71,8 @@ tranAmount_Name = 'tranAmount_'
 metalMap_Name = 'metalMap_'
 aoSmall_Name = 'ao_small'
 aoLarge_Name = 'ao_large'
-newImagePath = ''  # global variable, image path for baking
+# global variable, image path for baking
+newImagePath = ''
 lpMatTag = 'lp_'
 
 lpMaterialList = set()
@@ -81,7 +83,8 @@ laterActivation = ()
 project_name_name = 'project name'
 
 metal_marker_search_text = 'Metal_GRP'
-metalMasksParent = None  # type:modo.Item
+# type:modo.Item
+metalMasksParent = None
 metal_marker_present = False
 
 bake_cage_marker = 'bake cage'
@@ -125,7 +128,6 @@ def get_project_name():
 def getImagePath():
     global newImagePath
     projectPath = lx.eval('query platformservice path.path ? project')
-    # print 'projectPath :', projectPath
     scene_name = get_project_name()
     if scene_name != '':
         scene_name += '\\'
@@ -138,7 +140,6 @@ def getImagePath():
             print('os.mkdir("%s")' % dirPath)
             pass
     path = dirPath
-    # print 'temp path :', path
     if not os.path.exists(path):
         path = modo.dialogs.dirBrowse('Choose directory for baked images:', projectPath)
         if path is None:
@@ -159,8 +160,6 @@ def getImagePath_tmp():
             os.mkdir(path_tmp)
         except:
             path_tmp = getImagePath()
-            # print 'tmp dir making error'
-    # print 'path_tmp = %s' % path_tmp
     return path_tmp
 
 
@@ -171,20 +170,23 @@ def meshProcessed(mesh):
     if splitTag.lower() in mesh.name.lower():
         print('split tag found in mesh: %s' % mesh.name)
         return True
-    # if udimPartTag.lower() in mesh.name.lower():
-    #     print 'udim part tag found in mesh: %s' % mesh.name
-    #     return True
     return False
 
 
 def get_resolution_override(name=''):
-    start = -1  # variable declaration
-    end = -1  # variable declaration
-    code_length = 0  # variable declaration
+    # variable declaration
+    start = -1
+    # variable declaration
+    end = -1
+    # variable declaration
+    code_length = 0
     imgSize_default = int(imgSize)
-    resolution = imgSize_default  # variable declaration
-    code_mode = ''  # variable declaration
-    input_size = imgSize_default  # variable declaration
+    # variable declaration
+    resolution = imgSize_default
+    # variable declaration
+    code_mode = ''
+    # variable declaration
+    input_size = imgSize_default
     cm_mult = 'mul'
     cm_div = 'div'
     cm_dir = 'dir'
@@ -239,22 +241,16 @@ def get_resolution_override(name=''):
         print('resolution override error: <{}>, default used, UV Map: <{}>   start: <{}>   end: <{}>'.format(error.message, name, start, end))
         return imgSize_default
 
-    # print 'UV Map: <{}> - resolution override set to [{}]'.format(name, resolution)
     return resolution
 
 
 def generateMaterials(mesh):
     for vmap in mesh.geometry.vmaps.uvMaps:
-        # print vmap, ':', vmap.name
-        # print mesh, ':', mesh.name
         searchName = mesh.name.split(splitTag)[1]
-        # print 'searchName:', searchName, 'vmap.name:', vmap.name, 'mesh.name:', mesh.name
         if searchName == vmap.name:
             uvMap = vmap
-    # print 'generateMaterials', ':', mesh, ':', mesh.name, ':',  uvMap, ':', uvMap.name
     newImagePath = getImagePath()
     newImagePath_tmp = getImagePath_tmp()
-    # baseIndex = 0
     masterShader = None
     for item in scene.renderItem.children(recursive=False, itemType='mask'):
         baseIndex = item.parentIndex + 1
@@ -262,9 +258,7 @@ def generateMaterials(mesh):
         if item.type == 'defaultShader':
             masterShader = item
             baseIndex = masterShader.parentIndex
-    # print masterShader
     if masterShader is None:
-        # print 'before addItem'
         masterShader = scene.addItem('defaultShader')
         print('default shader added : %s' % masterShader.name)
 
@@ -275,7 +269,6 @@ def generateMaterials(mesh):
     lx.eval('shader.setVisible "%s" false' % mask.name)
     mask.setParent(scene.renderItem, index=baseIndex)
     mask.itemGraph('shadeLoc') >> mesh.itemGraph('shadeLoc')
-    # print 'generating %s mask' % mask.name
 
     mask_1 = scene.addItem('mask', '%s ao_ro_me_lum_norm *RGB*' % pass_1)
     mask_1.setParent(mask, -1)
@@ -301,7 +294,8 @@ def generateMaterials(mesh):
     grad_me.channel('color.B').envelope.keyframes.add(1.0, 1.0)
     grad_me.channel('color.B').envelope.preBehaviour = lx.symbol.iENV_LINEAR
     grad_me.channel('color.B').envelope.postBehaviour = lx.symbol.iENV_LINEAR
-    grad_me.channel('param').set('driverD')  # metallic >> ao_ro_me
+    # metallic >> ao_ro_me
+    grad_me.channel('param').set('driverD')
     grad_me.channel('effect').set('diffColor')
     grad_me.channel('blend').set('add')
 
@@ -311,13 +305,10 @@ def generateMaterials(mesh):
     aoLargeSearchName = '%s%s (Image)' % (aoLargeTag, matTag)
     print('ao search names:', aoSmallSearchName, ';', aoLargeSearchName)
     for image in scene.items('imageMap'):
-        # print image, ':', image.name, ':', image.type
         if aoSmallSearchName in image.name:
             aoSmallImage = image
-            # print aoSmallImage
         if aoLargeSearchName in image.name:
             aoLargeImage = image
-            # print aoLargeImage
     aoSmallImage.channel('effect').set('driverC')
     aoSmallImage.channel('blend').set('normal')
     aoLargeImage.channel('effect').set('driverC')
@@ -466,7 +457,6 @@ def generateMaterials(mesh):
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_ao_ro_me.channel('effect').set('diffColor')
-    # print 'after ao ro me'
 
     imgName_norm = '%s%s' % (mesh.name, sfx_norm)
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath, imgName_norm, imgSize_override))
@@ -483,7 +473,6 @@ def generateMaterials(mesh):
     lx.eval('select.subItem {%s:videoStill001} set mediaClip' % imgName_norm)
     lx.eval('select.subItem %s set textureLayer' % img_norm.id)
     lx.eval('item.channel colorspace (none)')
-    # print 'after norm'
 
     imgName_lum = '%s%s' % (mesh.name, sfx_lum)
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath, imgName_lum, imgSize_override))
@@ -497,7 +486,6 @@ def generateMaterials(mesh):
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_lum.channel('effect').set('lumiColor')
-    # print 'after lum'
 
     imgName_tr_tmp = '%s%s' % (mesh.name, sfx_tr_tmp)
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath_tmp, imgName_tr_tmp, imgSize_override))
@@ -511,7 +499,6 @@ def generateMaterials(mesh):
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_tr_tmp.channel('effect').set('diffColor')
-    # print 'after tr tmp'
 
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath_tmp, imgName_me_fl, imgSize_override))
     img_me_fl = scene.addItem('imageMap')
@@ -524,9 +511,7 @@ def generateMaterials(mesh):
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_me_fl.channel('effect').set('diffColor')
-    # print 'after me fl'
 
-    # print 'before di di'
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath_tmp, imgName_di_di, imgSize_override))
     img_di_di = scene.addItem('imageMap')
     img_di_di.setParent(mask_diffColor, -1)
@@ -538,59 +523,57 @@ def generateMaterials(mesh):
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_di_di.channel('effect').set('diffColor')
-    # print 'after di di'
 
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath_tmp, imgName_me_sp, imgSize_override))
     img_me_sp = scene.addItem('imageMap')
     img_me_sp.setParent(mask_metalColor, -1)
     img_me_sp.select(True)
     lx.eval('item.editorColor red')
-    lx.eval('shader.setVisible "%s" false' % img_me_sp.name)  # disable img_me_sp
+    # disable img_me_sp
+    lx.eval('shader.setVisible "%s" false' % img_me_sp.name)
     lx.eval('select.subItem {%s:videoStill001} set mediaClip' % imgName_me_sp)
     lx.eval('texture.setIMap {%s:videoStill001}' % imgName_me_sp)
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_me_sp.channel('effect').set('specColor')
-    # print 'after me sp'
 
     img3_me_sp = scene.addItem('imageMap')
     img3_me_sp.setParent(mask_3, -1)
     img3_me_sp.select(True)
     lx.eval('item.editorColor pink')
-    lx.eval('shader.setVisible "%s" false' % img3_me_sp.name)  # disable img3_me_sp
+    # disable img3_me_sp
+    lx.eval('shader.setVisible "%s" false' % img3_me_sp.name)
     lx.eval('select.subItem {%s:videoStill001} set mediaClip' % imgName_me_sp)
     lx.eval('texture.setIMap {%s:videoStill001}' % imgName_me_sp)
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img3_me_sp.channel('effect').set('diffColor')
-    # print 'after img3 me sp'
 
-    # print 'before img3 me fl'
     img3_me_fl = scene.addItem('imageMap')
     img3_me_fl.setParent(mask_3, -1)
     img3_me_fl.select(True)
     lx.eval('item.editorColor pink')
-    lx.eval('shader.setVisible "%s" false' % img3_me_fl.name)  # disable img3_me_fl
+    # disable img3_me_fl
+    lx.eval('shader.setVisible "%s" false' % img3_me_fl.name)
     lx.eval('select.subItem {%s:videoStill001} set mediaClip' % imgName_me_fl)
     lx.eval('texture.setIMap {%s:videoStill001}' % imgName_me_fl)
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img3_me_fl.channel('effect').set('diffColor')
     img3_me_fl.channel('blend').set('multiply')
-    # print 'after img3 me fl'
 
     img3_di_di = scene.addItem('imageMap')
     img3_di_di.setParent(mask_3, -1)
     img3_di_di.select(True)
     lx.eval('item.editorColor pink')
-    lx.eval('shader.setVisible "%s" false' % img3_di_di.name)  # disable img3_di_di
+    # disable img3_di_di
+    lx.eval('shader.setVisible "%s" false' % img3_di_di.name)
     lx.eval('select.subItem {%s:videoStill001} set mediaClip' % imgName_di_di)
     lx.eval('texture.setIMap {%s:videoStill001}' % imgName_di_di)
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img3_di_di.channel('effect').set('diffColor')
     img3_di_di.channel('blend').set('add')
-    # print 'after img3 di di'
 
     imgName_bc_tmp = '%s%s' % (mesh.name, sfx_bc_tmp)
     lx.eval('clip.newStill "%s%s.png" x%s RGB false false format:PNG' % (newImagePath_tmp, imgName_bc_tmp, imgSize_override))
@@ -598,13 +581,13 @@ def generateMaterials(mesh):
     img_bc_tmp.setParent(mask_3, -1)
     img_bc_tmp.select(True)
     lx.eval('item.editorColor red')
-    lx.eval('shader.setVisible "%s" false' % img_bc_tmp.name)  # disable img_bc_tmp
+    # disable img_bc_tmp
+    lx.eval('shader.setVisible "%s" false' % img_bc_tmp.name)
     lx.eval('select.subItem {%s:videoStill001} set mediaClip' % imgName_bc_tmp)
     lx.eval('texture.setIMap {%s:videoStill001}' % imgName_bc_tmp)
     lx.eval('item.channel textureLayer(txtrLocator)$projType uv')
     lx.eval('texture.setUV "%s"' % uvMap.name)
     img_bc_tmp.channel('effect').set('diffColor')
-    # print 'after bc tmp'
 
     return mesh
 
@@ -623,13 +606,12 @@ def getLpList_children(parent_item):
     return children_list
 
 
-def getTodoList():  # selected meshes except processed(detection by key words in name)
+# selected meshes except processed(detection by key words in name)
+def getTodoList():
     lpItem = None
     for item in scene.items('groupLocator'):
         if lpTag.lower() in item.name.lower():
-            # print item.name
             lpItem = item
-            # print 'lpItem:', lpItem.id, lpItem.name
     if lpItem is None:
         print('lowpoly item not found')
         print('cancelled')
@@ -641,8 +623,10 @@ def getTodoList():  # selected meshes except processed(detection by key words in
         lpList = getLpList_selected()
     else:
         lpList = getLpList_children(lpItem)
-    scene.deselect()  # deselect all items
-    for mesh_item in lpList:  # select each  items in list
+    # deselect all items
+    scene.deselect()
+    # select each  items in list
+    for mesh_item in lpList:
         mesh_item.select()
     print('low poly items found:', len(lpList))
 
@@ -668,30 +652,12 @@ def getUvMapsNameList(todo_list):
 
 
 def prepare_image_map(preparing_texture):
-    # print texture
     preparing_texture.channel('pixBlend').set('nearest')
     preparing_texture.channel('aa').set(0)
 
 
 print('')
 print('starting...')
-
-# if not lx.eval('query scriptsysservice userValue.isDefined ? {%s}' % userValSelectedName):
-#     lx.eval('user.defNew {%s} boolean life:config' % userValSelectedName)
-#     lx.eval('user.def {%s} username {%s}' % (userValSelectedName, userValSelectedUsername))
-#     lx.eval('user.def {%s} dialogname {%s}' % (userValSelectedName, userValSelectedDialogname))
-#     lx.eval('user.value {%s} %s' % (userValSelectedName, 'false'))
-# if not lx.eval('query scriptsysservice userValue.isDefined ? {%s}' % userValBakeName):
-#     lx.eval('user.defNew {%s} boolean life:config' % userValBakeName)
-#     lx.eval('user.def {%s} username {%s}' % (userValBakeName, userValBakeUsername))
-#     lx.eval('user.def {%s} dialogname {%s}' % (userValBakeName, userValBakeDialogname))
-#     lx.eval('user.value {%s} %s' % (userValBakeName, 'true'))
-# if not lx.eval('query scriptsysservice userValue.isDefined ? {%s}' % userValImgSizeName):
-#     lx.eval('user.defNew {%s} integer life:config' % userValImgSizeName)
-#     lx.eval('user.def {%s} list {%s}' % (userValImgSizeName, userValImgSizeList))
-#     lx.eval('user.def {%s} username {%s}' % (userValImgSizeName, userValImgSizeUsername))
-#     lx.eval('user.def {%s} dialogname {%s}' % (userValImgSizeName, userValImgSizeDialogname))
-#     lx.eval('user.value {%s} %s' % (userValImgSizeName, 4))
 
 bake_selected = lx.eval('user.value {%s} ?' % userValSelectedName) is not 0
 bakeOn = lx.eval('user.value {%s} ?' % userValBakeName) is not 0
@@ -706,9 +672,6 @@ for mask in mask_list:
             prepare_image_map(imageMap)
 
 todoList = getTodoList()
-# for mesh in todoList:
-#     print mesh, ':', mesh.name
-# TODO baked group locator should not be duplicated
 try:
     meshByUvGroupLocator = scene.item(bakedGroupMarker)
 except LookupError:
@@ -717,9 +680,7 @@ meshByUvGroupLocator.setParent()
 meshByUvList = set()
 uvMapsNameList = getUvMapsNameList(todoList)
 for uvMapName in uvMapsNameList:
-    # print uvMapName
     scene.deselect()
-    # print 'scene selected', scene.selected
     for mesh in todoList:
         scene.select(mesh, True)
     lx.eval('select.drop polygon')
@@ -733,16 +694,14 @@ for uvMapName in uvMapsNameList:
     meshByUvList.add(newMesh)
 # -----create materials for baking from updated material list
 for mesh in meshByUvList:
-    # print mesh, ':', mesh.name
     generateMaterials(mesh)
 # -----bake textures
 for item in meshByUvList:
-    scene.deselect()    #deselect all
-    # print
-    # print 'deselect all'
-    # print scene.selected
+    # deselect all
+    scene.deselect()
     print(item, ':', item.name)
-    item.select(True)   #select mesh
+    # select mesh
+    item.select(True)
     masterMask = None
     passOne = None
     passTwo = None
@@ -767,239 +726,218 @@ for item in meshByUvList:
     for mask in masterMask.children(recursive=True, itemType='mask'):
         if pass_1 in mask.name:
             passOne = mask
-            # print 'passOne found:', passOne.name
             continue
         if pass_2 in mask.name:
             passTwo = mask
-            # print 'passTwo found:', passTwo.name
             continue
         if pass_3 in mask.name:
             passThree = mask
-            # print 'passThree found:', passThree.name
             continue
         if pass_tr in mask.name:
             passTransparency = mask
-            # print 'passTransparency found:', passTransparency.name
             continue
         if pass_me_fl in mask.name:
             passMetallicFlag = mask
-            # print 'passMetallicFlag found:', passMetallicFlag.name
             continue
     for texture in passOne.children():
         if sfx_ao_ro_me in texture.name:
             texture_ao_ro_me = texture
-            # print 'texture_ao_ro_me found:', texture_ao_ro_me.name
             continue
         if sfx_norm in texture.name:
             texture_norm = texture
-            # print 'texture_norm found:', texture_norm.name
             continue
         if sfx_lum in texture.name:
             texture_lum = texture
-            # print 'texture_lum found:', texture_norm.name
             continue
     for texture in passTwo.children():
-        # print 'passTwo.children:', texture.name
-        # print '   ', pass_metalColorName, ':', texture.name
-        # print '   ', pass_diffColorName, ':', texture.name
         if pass_metalColorName in texture.name:
             pass_metalColor = texture
-            # print 'pass_metalColor found:', pass_metalColor.name
             continue
         if pass_diffColorName in texture.name:
             pass_diffColor = texture
-            # print 'pass_diffColor found:', pass_diffColor.name
             continue
     for texture in pass_metalColor.children():
-        # print 'pass_metalColor:', texture.name
         if sfx_me_sp in texture.name:
             texture_me_sp = texture
-            # print 'texture_me_sp found:', texture_me_sp.name
             continue
     for texture in pass_diffColor.children():
-        # print 'pass_diffColor.children:', texture.name
         if sfx_di_di in texture.name:
             texture_di_di = texture
-            # print 'texture_di_di found:', texture_di_di.name
             continue
     for texture in passTransparency.children():
         if sfx_tr_tmp in texture.name:
             texture_tr_tmp = texture
-            # print 'texture_tr_tmp found:', texture_tr_tmp.name
             continue
     for texture in passMetallicFlag.children():
         if sfx_me_fl in texture.name:
             texture_me_fl = texture
-            # print 'texture_me_fl found:', texture_me_fl.name
             continue
 
     for texture in passThree.children():
         if sfx_bc_tmp in texture.name:
             texture_bc_tmp = texture
-            # print 'texture_bc_tmp found:', texture_bc_tmp.name
             continue
         if sfx_me_fl in texture.name:
             pass_3_me_fl = texture
-            # print 'pass_3_me_fl found:', pass_3_me_fl.name
             continue
         if sfx_di_di in texture.name:
             pass_3_di_di = texture
-            # print 'pass_3_di_di found:', pass_3_di_di.name
             continue
         if sfx_me_sp in texture.name:
             pass_3_me_sp = texture
-            # print 'pass_3_me_sp found:', pass_3_me_sp.name
             continue
 
     print(item, ':', item.name)
     # do image maps preparation before every baking
     # -----bake pass 1
-    lx.eval('shader.setVisible "%s" true' % masterMask.name)  # enable master mask
+    # enable master mask
+    lx.eval('shader.setVisible "%s" true' % masterMask.name)
 
-    lx.eval('shader.setVisible "%s" true' % passOne.name)  # enable pass 1 mask
-    # lx.eval('shader.setVisible "%s" true' % texture_ao_ro_me.name)  # enable ao_ro_me texture
+    # enable pass 1 mask
+    lx.eval('shader.setVisible "%s" true' % passOne.name)
     texture_ao_ro_me.select(True)
-    # print 'ao_ro_me :', texture_ao_ro_me, ':', texture_ao_ro_me.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake ao_ro_me texture
+        # bake ao_ro_me texture
+        lx.eval('bake.toTexture')
     videoClip = texture_ao_ro_me.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
     # lx.eval('!clip.reload')
 
-    # lx.eval('shader.setVisible "%s" false' % texture_ao_ro_me.name)  # disable ao_ro_me texture
-    # lx.eval('shader.setVisible "%s" true' % texture_norm.name)  # enable norm texture
     texture_norm.select(True)
-    # print 'norm :', texture_norm, ':', texture_norm.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake norm texture
+        # bake norm texture
+        lx.eval('bake.toTexture')
     videoClip = texture_norm.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
     # lx.eval('!clip.reload')
 
-    # lx.eval('shader.setVisible "%s" false' % texture_norm.name)  # disable norm texture
-    # lx.eval('shader.setVisible "%s" true' % texture_lum.name)  # enable lum texture
     texture_lum.select(True)
-    # print 'lum :', texture_lum, ':', texture_lum.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake lum texture
+        # bake lum texture
+        lx.eval('bake.toTexture')
     videoClip = texture_lum.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
-    # lx.eval('!clip.reload')
+        # lx.eval('!clip.reload')
 
-    # lx.eval('shader.setVisible "%s" false' % texture_lum.name)  # disable lum texture
-    lx.eval('shader.setVisible "%s" false' % passOne.name) # disable pass 1 mask
+    # disable pass 1 mask
+    lx.eval('shader.setVisible "%s" false' % passOne.name)
 
     # -----bake pass 2
-    lx.eval('shader.setVisible "%s" true' % passTwo.name)  # enable pass 2 mask
-    lx.eval('shader.setVisible "%s" true' % passTransparency.name)  # enable transparency pass
-    # lx.eval('shader.setVisible "%s" true' % texture_tr_tmp.name)  # enable tr_tmp texture
+    # enable pass 2 mask
+    lx.eval('shader.setVisible "%s" true' % passTwo.name)
+    # enable transparency pass
+    lx.eval('shader.setVisible "%s" true' % passTransparency.name)
     texture_tr_tmp.select(True)
-    # print 'tr_tmp :', texture_tr_tmp, ':', texture_tr_tmp.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake tr_tmp texture
+        # bake tr_tmp texture
+        lx.eval('bake.toTexture')
     videoClip = texture_tr_tmp.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
-    # lx.eval('!clip.reload')
+        # lx.eval('!clip.reload')
 
-    # lx.eval('shader.setVisible "%s" false' % texture_tr_tmp.name)  # disable tr_tmp texture
-    lx.eval('shader.setVisible "%s" false' % passTransparency.name)  # disable transparency pass
-    lx.eval('shader.setVisible "%s" true' % passMetallicFlag.name)  # enable metallic flag pass
-    # lx.eval('shader.setVisible "%s" true' % texture_me_fl.name)  # enable me_fl texture
+    # disable transparency pass
+    lx.eval('shader.setVisible "%s" false' % passTransparency.name)
+    # enable metallic flag pass
+    lx.eval('shader.setVisible "%s" true' % passMetallicFlag.name)
     texture_me_fl.select(True)
-    # print 'me_fl :', texture_me_fl, ':', texture_me_fl.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake me_fl texture
+        # bake me_fl texture
+        lx.eval('bake.toTexture')
     videoClip = texture_me_fl.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
-    # lx.eval('!clip.reload')
+        # lx.eval('!clip.reload')
 
-    lx.eval('shader.setVisible "%s" false' % passMetallicFlag.name)  # disable metallic flag pass
-    lx.eval('shader.setVisible "%s" true' % pass_diffColor.name)  # enable diffuse color pass
+    # disable metallic flag pass
+    lx.eval('shader.setVisible "%s" false' % passMetallicFlag.name)
+    # enable diffuse color pass
+    lx.eval('shader.setVisible "%s" true' % pass_diffColor.name)
     texture_di_di.select(True)
-    # print 'di_di :', texture_di_di, ':', texture_di_di.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake di_di texture
+        # bake di_di texture
+        lx.eval('bake.toTexture')
     videoClip = texture_di_di.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
-    # lx.eval('!clip.reload')
+        # lx.eval('!clip.reload')
 
-    lx.eval('shader.setVisible "%s" false' % pass_diffColor.name)  # disable diffuse color pass
-    lx.eval('shader.setVisible "%s" true' % pass_metalColor.name)  # enable metallic color pass
+    # disable diffuse color pass
+    lx.eval('shader.setVisible "%s" false' % pass_diffColor.name)
+    # enable metallic color pass
+    lx.eval('shader.setVisible "%s" true' % pass_metalColor.name)
     texture_me_sp.select(True)
-    # print 'me_sp :', texture_me_sp, ':', texture_me_sp.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake me_sp texture
+        # bake me_sp texture
+        lx.eval('bake.toTexture')
     videoClip = texture_me_sp.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
-    # lx.eval('!clip.reload')
+        # lx.eval('!clip.reload')
 
-    lx.eval('shader.setVisible "%s" false' % pass_metalColor.name)  # disable metallic color pass
-    lx.eval('shader.setVisible "%s" false' % passTwo.name)  # disable pass 2 mask
+    # disable metallic color pass
+    lx.eval('shader.setVisible "%s" false' % pass_metalColor.name)
+    # disable pass 2 mask
+    lx.eval('shader.setVisible "%s" false' % passTwo.name)
 
     # -----bake pass 3
-    # print passThree, ':', passThree.name
     passThree.channel('enable').set(True)
     pass_3_me_sp.channel('enable').set(True)
     pass_3_me_fl.channel('enable').set(True)
     pass_3_di_di.channel('enable').set(True)
-    # lx.eval('shader.setVisible "%s" true' % texture_bc_tmp.name)  # enable bc_tmp texture
     texture_bc_tmp.select(True)
-    # print 'bc_tmp :', texture_bc_tmp, ':', texture_bc_tmp.name
     # image maps preparation
     for imageMap in scene.items(itype='imageMap'):
         prepare_image_map(imageMap)
     if bakeOn:
-        lx.eval('bake.toTexture')  # bake bc_tmp texture
+        # bake bc_tmp texture
+        lx.eval('bake.toTexture')
     videoClip = texture_bc_tmp.itemGraph('shadeLoc').forward(1)
     lx.eval('select.subItem {%s:videoStill001} set textureLayer;mediaClip' % videoClip.name)
     if bakeOn:
         lx.eval('clip.save')
-    # lx.eval('!clip.reload')
+        # lx.eval('!clip.reload')
 
-    # lx.eval('shader.setVisible "%s" false' % texture_bc_tmp.name)  # disable bc_tmp texture
-    lx.eval('shader.setVisible "%s" false' % passThree.name)  # disable pass 3 mask
+    # disable pass 3 mask
+    lx.eval('shader.setVisible "%s" false' % passThree.name)
 
-    lx.eval('shader.setVisible "%s" false' % masterMask.name)  # disable master mask
+    # disable master mask
+    lx.eval('shader.setVisible "%s" false' % masterMask.name)
 
     gltfShader = scene.addItem('glTFShader')
     gltfShader.setParent(masterMask, -1)
     gltfShader.channel('emissive').set((1.0, 1.0, 1.0))
-    # gltfShader.channel('enable').set(False)
     final_ao = scene.duplicateItem(texture_ao_ro_me)
     final_ao.setParent(masterMask, -1)
     final_ao.channel('enable').set(True)

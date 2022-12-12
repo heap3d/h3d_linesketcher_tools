@@ -14,7 +14,7 @@ import modo.constants as c
 scene = modo.scene.current()
 
 print()
-print('start...')
+print("start...")
 
 # store selection
 selectionStore = scene.selected
@@ -27,7 +27,7 @@ for replicator in replicatorsSet:
 
 # todo convert replicators to instances
 if len(replicatorsSet) > 0:
-    lx.eval('replicator.freeze')
+    lx.eval("replicator.freeze")
 
 # todo get all instances
 instancesSet = scene.items(itype=c.MESHINST_TYPE)
@@ -37,12 +37,11 @@ for instance in instancesSet:
 
 # todo convert instances to mesh items
 if len(instancesSet) > 0:
-    lx.eval('item.setType mesh locator')
+    lx.eval("item.setType mesh locator")
 
 # restore selection
 scene.deselect()
 for item in selectionStore:
     item.select()
 
-print('done.')
-
+print("done.")
